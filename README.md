@@ -1,7 +1,4 @@
-# 🐔 Poultry Feed Formulation Calculator
-
-> **KASU/19/CSC/1069** — Final Year Project  
-> Department of Computer Science, Kaduna State University (KASU)
+# Poultry-Feed-Optimizer
 
 A production-ready **Flutter** mobile application that calculates precise, balanced daily feed mixtures for different poultry types using a **goal-programming / non-linear optimisation** approach. All calculations are stored offline in a local **SQLite** database for historical reference.
 
