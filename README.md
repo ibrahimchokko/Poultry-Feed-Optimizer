@@ -1,6 +1,6 @@
 # Poultry-Feed-Optimizer
 
-A production-ready **Flutter** mobile application that calculates precise, balanced daily feed mixtures for different poultry types using a **goal-programming / non-linear optimisation** approach. All calculations are stored offline in a local **SQLite** database for historical reference.
+A production-ready **Flutter** mobile application that calculates precise, balanced daily feed mixtures for different poultry types using a **goal-programming / linear optimisation** approach. All calculations are stored offline in a local **SQLite** database for historical reference.
 
 ---
 
@@ -14,6 +14,7 @@ A production-ready **Flutter** mobile application that calculates precise, balan
 - [Business Logic](#business-logic)
 - [Database Schema](#database-schema)
 - [Project Structure](#project-structure)
+- [Architecture](#architecture)
 - [Getting Started](#getting-started)
 - [Running the App](#running-the-app)
 - [Academic Context](#academic-context)
@@ -38,7 +39,7 @@ The formulation engine is based on **nutrient-proportion matrices** derived from
 | **Offline Storage** | Full SQLite persistence via `sqflite` |
 | **History Portal** | Draggable bottom sheet with full recipe view |
 | **Delete Records** | One-tap delete with live list refresh |
-| **Input Validation** | Real-time field validation with red error snackbars |
+| **Input Validation** | Real-time field validation with error snackbars |
 | **Result Dialog** | Scrollable, selectable monospace recipe output |
 | **Material 3 Design** | Dynamic colour scheme, cards, elevated buttons |
 | **Null-safe & typed** | Strict Dart null safety throughout |
@@ -64,7 +65,7 @@ The formulation engine is based on **nutrient-proportion matrices** derived from
 | **Local Database** | SQLite via [`sqflite ^2.3.3`](https://pub.dev/packages/sqflite) |
 | **Path Utilities** | [`path ^1.9.0`](https://pub.dev/packages/path) |
 | **Platform** | Android (iOS-compatible structure) |
-| **Architecture** | Single-file, self-contained `main.dart` |
+| **Architecture** | Layered — service / repository / database separation |
 
 ---
 
@@ -167,7 +168,25 @@ Ingredient kg       = Total Feed × Ingredient Proportion
 ```
 feed_formulation_calculator_linear_method/
 ├── lib/
-│   └── main.dart               # Complete single-file app
+│   ├── main.dart                               # Entry point – runApp only
+│   ├── app.dart                                # FeedFormulatorApp (MaterialApp + theme)
+│   ├── constants/
+│   │   └── app_constants.dart                  # Feed-rate constants & formulation matrix
+│   ├── models/
+│   │   └── formulation_record.dart             # FormulationRecord data class
+│   ├── database/
+│   │   └── database_helper.dart                # SQLite singleton (sqflite)
+│   ├── repositories/
+│   │   └── formulation_repository.dart         # Data access layer over DatabaseHelper
+│   ├── services/
+│   │   └── formulation_service.dart            # Age-group resolution, feed-rate & calculation
+│   ├── screens/
+│   │   ├── home/
+│   │   │   └── home_screen.dart                # Main input form & orchestration
+│   │   └── histoy/
+│   │       └── history_bottom_sheet.dart       # Draggable history sheet
+│   └── widgets/
+│       └── history_card.dart                   # Reusable history list-item card
 ├── android/
 │   ├── app/
 │   │   ├── build.gradle
@@ -180,6 +199,32 @@ feed_formulation_calculator_linear_method/
 ├── pubspec.yaml
 └── README.md
 ```
+
+---
+
+## Architecture
+
+The app follows a clean layered architecture with a clear dependency direction:
+
+```
+main.dart
+  └── app.dart  (MaterialApp)
+        └── screens/home/home_screen.dart  (UI + input validation)
+              └── services/formulation_service.dart  (business logic)
+                    └── repositories/formulation_repository.dart  (data access API)
+                          └── database/database_helper.dart  (SQLite singleton)
+                                └── models/formulation_record.dart  (data class)
+```
+
+| Layer | Responsibility |
+|---|---|
+| **screens/** | UI rendering, user input, navigation |
+| **widgets/** | Reusable UI components |
+| **services/** | Age-group resolution, feed-rate lookup, recipe calculation |
+| **repositories/** | Abstract data access — inserts, queries, deletes |
+| **database/** | Raw SQLite connection management via `sqflite` |
+| **models/** | Pure Dart data classes with `toMap` / `fromMap` |
+| **constants/** | Feed-rate values and the full ingredient proportion matrix |
 
 ---
 
@@ -220,7 +265,7 @@ This application was developed as part of a final-year Computer Science project 
 
 - Applied use of **linear / goal-programming** methods in agricultural software
 - Offline-first mobile architecture with **SQLite**
-- Clean, production-grade **Flutter / Dart** development practices
+- Clean, production-grade **Flutter / Dart** development practices with layered architecture
 - Real-world problem solving in the Nigerian poultry farming sector
 
 ---
