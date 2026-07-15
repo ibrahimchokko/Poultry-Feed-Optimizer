@@ -1,3 +1,6 @@
+# Flutter SDK directory (not part of project source)
+flutter/
+
 # Miscellaneous
 *.class
 *.log
