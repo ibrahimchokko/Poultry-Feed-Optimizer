@@ -8,7 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:feed_formulation_calculator_linear_method/main.dart';
+import 'package:poultry_feed_optimizer/main.dart';
 
 void main() {
   testWidgets('App launches and renders app bar title', (WidgetTester tester) async {

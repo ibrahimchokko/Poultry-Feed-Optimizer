@@ -1,6 +1,5 @@
 // =============================================================================
 // FeedFormulatorApp – root MaterialApp widget
-// Student ID: KASU/19/CSC/1069
 // =============================================================================
 
 import 'package:flutter/material.dart';

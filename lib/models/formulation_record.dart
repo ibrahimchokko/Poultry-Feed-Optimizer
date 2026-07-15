@@ -1,6 +1,5 @@
 // =============================================================================
-// FormulationRecord – data model for a saved feed formulation
-// Student ID: KASU/19/CSC/1069
+// FormulationRecord – data model for a saved Poultry-Feed-Optimizer record
 // =============================================================================
 
 /// Represents one saved formulation record from the SQLite database.

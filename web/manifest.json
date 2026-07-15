@@ -1,7 +1,7 @@
 {
     "name": "Feed Formulator",
     "short_name": "Feed Formulator",
-    "description": "Poultry Feed Formulation Calculator — KASU/19/CSC/1069",
+    "description": "Poultry-Feed-Optimizer",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#FFFFFF",

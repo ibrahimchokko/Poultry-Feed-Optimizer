@@ -1,6 +1,6 @@
-name: feed_formulation_calculator_linear_method
+name: poultry_feed_optimizer
 description: >
-  A Poultry Feed Formulation Calculator using goal-programming
+  A Poultry-Feed-Optimizer using goal-programming
   optimization, local SQLite storage, and Material 3 design.
 publish_to: 'none'
 version: 1.0.0+1

@@ -1,10 +1,9 @@
 // =============================================================================
 // App-wide constants and formulation data matrix
-// Student ID: KASU/19/CSC/1069
 // =============================================================================
 
 /// App bar title shown at all times.
-const String kAppTitle = 'Feed Formulator (KASU/19/CSC/1069)';
+const String kAppTitle = 'Feed Formulator';
 
 /// Base daily feed rate per bird (kg) for standard poultry types.
 const double kStandardFeedRate = 0.15;

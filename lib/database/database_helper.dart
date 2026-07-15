@@ -22,7 +22,7 @@ class DatabaseHelper {
 
   Future<Database> _initDatabase() async {
     final dbPath = await getDatabasesPath();
-    final fullPath = p.join(dbPath, 'feed_formulation.db');
+    final fullPath = p.join(dbPath, 'poultry_feed_optimizer.db');
 
     return openDatabase(
       fullPath,

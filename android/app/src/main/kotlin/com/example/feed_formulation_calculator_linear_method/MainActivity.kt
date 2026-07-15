@@ -1,4 +1,4 @@
-package com.example.feed_formulation_calculator_linear_method
+package com.example.poultry_feed_optimizer
 
 import io.flutter.embedding.android.FlutterActivity
 

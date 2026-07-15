@@ -150,7 +150,7 @@ Ingredient kg       = Total Feed × Ingredient Proportion
 
 ## Database Schema
 
-**File:** `feed_formulation.db`  
+**File:** `poultry_feed_optimizer.db`  
 **Table:** `formulations`
 
 | Column | Type | Constraints | Description |
@@ -261,7 +261,7 @@ flutter build ios --release
 
 ## Academic Context
 
-This application was developed as part of a final-year Computer Science project at **Kaduna State University (KASU)**, matric number **KASU/19/CSC/1069**. It demonstrates:
+This application was developed as part of a final-year Computer Science project at **Kaduna State University (KASU)**. It demonstrates:
 
 - Applied use of **linear / goal-programming** methods in agricultural software
 - Offline-first mobile architecture with **SQLite**
@@ -273,4 +273,4 @@ This application was developed as part of a final-year Computer Science project 
 ## License
 
 This project is submitted for academic evaluation. All rights reserved by the author.  
-© 2024 KASU/19/CSC/1069 — Kaduna State University.
+© 2024 Kaduna State University. All rights reserved by the author.

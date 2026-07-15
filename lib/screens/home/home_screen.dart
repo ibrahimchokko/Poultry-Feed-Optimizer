@@ -400,7 +400,7 @@ class _FormulatorHomePageState extends State<FormulatorHomePage> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Goal-programming optimisation\nfor precise feed formulation',
+                  'Goal-programming optimisation\nfor Poultry-Feed-Optimizer',
                   style: TextStyle(
                     color: Colors.white.withAlpha(220),
                     fontSize: 12,

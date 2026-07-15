@@ -6,7 +6,7 @@ import '../constants/app_constants.dart';
 import '../models/formulation_record.dart';
 import '../repositories/formulation_repository.dart';
 
-/// Pure business-logic service for poultry feed formulation.
+/// Pure business-logic service for poultry feed optimisation.
 ///
 /// Depends on [FormulationRepository] to persist results after calculation.
 class FormulationService {
@@ -65,7 +65,7 @@ class FormulationService {
     // Build a human-readable recipe string.
     final StringBuffer sb = StringBuffer();
     sb.writeln('═══════════════════════════════════');
-    sb.writeln('  FEED FORMULATION RESULT');
+    sb.writeln('  POULTRY-FEED-OPTIMIZER RESULT');
     sb.writeln('═══════════════════════════════════');
     sb.writeln('  Bird Type  : ${type.toUpperCase()}');
     sb.writeln('  Age Group  : $ageGroup weeks');
