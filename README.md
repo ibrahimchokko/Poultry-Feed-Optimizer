@@ -1,6 +1,6 @@
 # Poultry-Feed-Optimizer
 
-A production-ready **Flutter** mobile application that calculates precise, balanced daily feed mixtures for different poultry types using a **goal-programming / linear optimisation** approach. All calculations are stored offline in a local **SQLite** database for historical reference.
+A production-ready **Flutter** application — targeting Android, iOS, and Web from one codebase — that calculates precise, balanced daily feed mixtures for different poultry types using a **goal-programming / linear optimisation** approach. All calculations are stored offline in local on-device storage for historical reference.
 
 ---
 
@@ -36,7 +36,7 @@ The formulation engine is based on **nutrient-proportion matrices** derived from
 |---|---|
 | **Poultry Types** | Broilers, Layers, Noilers, Turkey |
 | **Age-Aware Formulation** | Automatic age-group resolution per species |
-| **Offline Storage** | Full SQLite persistence via `sqflite` |
+| **Offline Storage** | Local persistence via `shared_preferences` (works on Android, iOS, and Web) |
 | **History Portal** | Draggable bottom sheet with full recipe view |
 | **Delete Records** | One-tap delete with live list refresh |
 | **Input Validation** | Real-time field validation with error snackbars |
@@ -62,9 +62,8 @@ The formulation engine is based on **nutrient-proportion matrices** derived from
 |---|---|
 | **Framework** | Flutter 3.x (Material 3) |
 | **Language** | Dart 3.x (null-safe) |
-| **Local Database** | SQLite via [`sqflite ^2.3.3`](https://pub.dev/packages/sqflite) |
-| **Path Utilities** | [`path ^1.9.0`](https://pub.dev/packages/path) |
-| **Platform** | Android (iOS-compatible structure) |
+| **Local Storage** | [`shared_preferences ^2.3.2`](https://pub.dev/packages/shared_preferences) |
+| **Platform** | Android, iOS, and Web (deployable to Vercel — see `vercel.json`) |
 | **Architecture** | Layered — service / repository / database separation |
 
 ---
@@ -148,18 +147,18 @@ Ingredient kg       = Total Feed × Ingredient Proportion
 
 ---
 
-## Database Schema
+## Storage Schema
 
-**File:** `poultry_feed_optimizer.db`  
-**Table:** `formulations`
+**Backend:** `shared_preferences` (native prefs on Android/iOS/desktop, `localStorage` on Web)
+**Key:** `formulation_records` — a JSON-encoded list of record objects
 
-| Column | Type | Constraints | Description |
-|---|---|---|---|
-| `id` | INTEGER | PRIMARY KEY AUTOINCREMENT | Unique record identifier |
-| `type` | TEXT | NOT NULL | Poultry type (e.g. `broilers`) |
-| `age` | TEXT | NOT NULL | Age group key (e.g. `1-4`) |
-| `amount` | INTEGER | NOT NULL | Number of birds in the flock |
-| `formulation` | TEXT | NOT NULL | Full formatted recipe string |
+| Field | Type | Description |
+|---|---|---|
+| `id` | int | Unique record identifier (auto-incrementing) |
+| `type` | String | Poultry type (e.g. `broilers`) |
+| `age` | String | Age group key (e.g. `1-4`) |
+| `amount` | int | Number of birds in the flock |
+| `formulation` | String | Full formatted recipe string |
 
 ---
 
@@ -175,7 +174,7 @@ feed_formulation_calculator_linear_method/
 │   ├── models/
 │   │   └── formulation_record.dart             # FormulationRecord data class
 │   ├── database/
-│   │   └── database_helper.dart                # SQLite singleton (sqflite)
+│   │   └── database_helper.dart                # SharedPreferences-backed storage singleton
 │   ├── repositories/
 │   │   └── formulation_repository.dart         # Data access layer over DatabaseHelper
 │   ├── services/
@@ -212,7 +211,7 @@ main.dart
         └── screens/home/home_screen.dart  (UI + input validation)
               └── services/formulation_service.dart  (business logic)
                     └── repositories/formulation_repository.dart  (data access API)
-                          └── database/database_helper.dart  (SQLite singleton)
+                          └── database/database_helper.dart  (storage singleton)
                                 └── models/formulation_record.dart  (data class)
 ```
 
@@ -222,7 +221,7 @@ main.dart
 | **widgets/** | Reusable UI components |
 | **services/** | Age-group resolution, feed-rate lookup, recipe calculation |
 | **repositories/** | Abstract data access — inserts, queries, deletes |
-| **database/** | Raw SQLite connection management via `sqflite` |
+| **database/** | Local storage management via `shared_preferences` |
 | **models/** | Pure Dart data classes with `toMap` / `fromMap` |
 | **constants/** | Feed-rate values and the full ingredient proportion matrix |
 
@@ -234,7 +233,8 @@ main.dart
 
 - [Flutter SDK](https://docs.flutter.dev/get-started/install) ≥ 3.0.0
 - Dart SDK ≥ 3.0.0 (bundled with Flutter)
-- Android SDK (API 21+) or a connected Android device / emulator
+- For mobile: Android SDK (API 21+) or a connected Android device / emulator
+- For web: a Chromium-based browser (`flutter run -d chrome`)
 
 ### Install Dependencies
 
@@ -250,11 +250,17 @@ flutter pub get
 # Run on a connected device or emulator
 flutter run
 
+# Run as a web prototype in Chrome
+flutter run -d chrome
+
 # Build a release APK
 flutter build apk --release
 
 # Build for iOS (macOS required)
 flutter build ios --release
+
+# Build a static web bundle (e.g. for Vercel — see vercel.json)
+flutter build web --release
 ```
 
 ---
@@ -264,7 +270,7 @@ flutter build ios --release
 This application was developed as part of a final-year Computer Science project at **Kaduna State University (KASU)**. It demonstrates:
 
 - Applied use of **linear / goal-programming** methods in agricultural software
-- Offline-first mobile architecture with **SQLite**
+- Offline-first, cross-platform architecture with local on-device storage
 - Clean, production-grade **Flutter / Dart** development practices with layered architecture
 - Real-world problem solving in the Nigerian poultry farming sector
 

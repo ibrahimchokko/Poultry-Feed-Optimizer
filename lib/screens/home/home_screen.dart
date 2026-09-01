@@ -55,6 +55,9 @@ class _FormulatorHomePageState extends State<FormulatorHomePage> {
         ageWeeks: int.parse(_ageController.text.trim()),
         flockSize: int.parse(_flockController.text.trim()),
       );
+    } catch (e) {
+      _showError('Could not calculate formulation: $e');
+      return null;
     } finally {
       if (mounted) setState(() => _isCalculating = false);
     }

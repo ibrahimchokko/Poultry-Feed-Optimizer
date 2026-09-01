@@ -1,7 +1,7 @@
 name: poultry_feed_optimizer
 description: >
   A Poultry-Feed-Optimizer using goal-programming
-  optimization, local SQLite storage, and Material 3 design.
+  optimization, local on-device storage, and Material 3 design.
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -11,8 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  sqflite: ^2.3.3+1
-  path: ^1.9.0
+  shared_preferences: ^2.3.2
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
@@ -22,6 +21,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-  assets:
-    - assets/
