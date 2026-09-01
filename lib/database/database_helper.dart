@@ -1,75 +1,78 @@
 // =============================================================================
-// DatabaseHelper – singleton SQLite access layer
+// DatabaseHelper – local persistence layer (SharedPreferences-backed)
 // =============================================================================
 
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart' as p;
+import 'dart:convert';
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/formulation_record.dart';
 
-/// Singleton that manages the app's SQLite database connection.
+/// Singleton that manages the app's local storage of [FormulationRecord]s.
+///
+/// Backed by [SharedPreferences], which maps to native prefs on
+/// Android/iOS/desktop and to `localStorage` on web — so, unlike a
+/// platform-specific SQLite plugin, it works identically on every platform
+/// Flutter can target (including a web build, e.g. a Vercel-hosted
+/// prototype) with no extra native setup.
 class DatabaseHelper {
   DatabaseHelper._internal();
   static final DatabaseHelper instance = DatabaseHelper._internal();
 
-  static Database? _database;
+  static const String _recordsKey = 'formulation_records';
+  static const String _nextIdKey = 'formulation_next_id';
 
-  /// Returns the open database, initialising it on first access.
-  Future<Database> get database async {
-    _database ??= await _initDatabase();
-    return _database!;
-  }
-
-  Future<Database> _initDatabase() async {
-    final dbPath = await getDatabasesPath();
-    final fullPath = p.join(dbPath, 'poultry_feed_optimizer.db');
-
-    return openDatabase(
-      fullPath,
-      version: 1,
-      onCreate: (Database db, int version) async {
-        await db.execute('''
-          CREATE TABLE formulations (
-            id        INTEGER PRIMARY KEY AUTOINCREMENT,
-            type      TEXT    NOT NULL,
-            age       TEXT    NOT NULL,
-            amount    INTEGER NOT NULL,
-            formulation TEXT  NOT NULL
-          )
-        ''');
-      },
-    );
-  }
-
-  /// Inserts a new [FormulationRecord] and returns its row id.
+  /// Inserts a new [FormulationRecord] and returns its new row id.
   Future<int> insertRecord(FormulationRecord record) async {
-    final db = await database;
-    return db.insert(
-      'formulations',
-      record.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final int id = prefs.getInt(_nextIdKey) ?? 1;
+
+    final List<Map<String, dynamic>> records = _readAll(prefs);
+    records.insert(0, {...record.toMap(), 'id': id});
+
+    await _writeAll(prefs, records);
+    await prefs.setInt(_nextIdKey, id + 1);
+    return id;
   }
 
   /// Returns all saved records, newest first.
   Future<List<FormulationRecord>> fetchAllRecords() async {
-    final db = await database;
-    final rows = await db.query('formulations', orderBy: 'id DESC');
-    return rows.map(FormulationRecord.fromMap).toList();
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return _readAll(prefs).map(FormulationRecord.fromMap).toList();
   }
 
   /// Deletes a single record by [id].
   Future<void> deleteRecord(int id) async {
-    final db = await database;
-    await db.delete('formulations', where: 'id = ?', whereArgs: [id]);
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final List<Map<String, dynamic>> records = _readAll(prefs)
+      ..removeWhere((Map<String, dynamic> r) => r['id'] == id);
+    await _writeAll(prefs, records);
   }
 
-  /// Closes the database connection and resets the cached reference.
-  Future<void> close() async {
-    final db = _database;
-    if (db != null) {
-      await db.close();
-      _database = null;
-    }
+  /// No-op, kept for API compatibility — SharedPreferences has no explicit
+  /// connection to close.
+  Future<void> close() async {}
+
+  // ---------------------------------------------------------------------------
+  // Internal (de)serialisation helpers
+  // ---------------------------------------------------------------------------
+
+  List<Map<String, dynamic>> _readAll(SharedPreferences prefs) {
+    final List<String> raw = prefs.getStringList(_recordsKey) ?? <String>[];
+    return raw
+        .map((String s) => Map<String, dynamic>.from(
+              jsonDecode(s) as Map<dynamic, dynamic>,
+            ))
+        .toList();
+  }
+
+  Future<void> _writeAll(
+    SharedPreferences prefs,
+    List<Map<String, dynamic>> records,
+  ) {
+    return prefs.setStringList(
+      _recordsKey,
+      records.map(jsonEncode).toList(),
+    );
   }
 }
